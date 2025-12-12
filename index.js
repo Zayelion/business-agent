@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import next from 'next';
+import createEnv from 'env';
 import { startHourlyJobs } from './cron/hourly/job.js';
 import { startDailyJobs } from './cron/daily/job.js';
 import agentsRouter from './interface/server/routes/agents.js';
@@ -9,8 +10,10 @@ import agentsRouter from './interface/server/routes/agents.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = Number.parseInt(process.env.PORT ?? '3000', 10);
-const dev = process.env.NODE_ENV !== 'production';
+const env = createEnv();
+
+const port = Number.parseInt(env('PORT', '3000'), 10);
+const dev = env('NODE_ENV', 'development') !== 'production';
 const nextApp = next({ dev, dir: path.join(__dirname, 'interface/server/ui') });
 const handle = nextApp.getRequestHandler();
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAgentRun, startAgentRun } from '../../../services/agentService.js';
+import { getAgentRun, startAgentRun } from '../../services/agentService.js';
 
 const router = Router();
 
