@@ -1,0 +1,120 @@
+openapi: 3.0.3
+info:
+  title: Business Agent API
+  version: '1.0.0'
+  description: >-
+    API surface for triggering agents from the Business Agent console. The
+    primary entry point is a POST request that queues work, and a GET endpoint
+    is available for streaming back logs and final results.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/agents/trigger:
+    post:
+      summary: Trigger an agent
+      description: >-
+        Queues execution for the given agent identifier without holding the HTTP
+        connection open. The endpoint proxies payloads to the `agents` package or
+        returns a stubbed response when the runner is unavailable.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agentId
+              properties:
+                agentId:
+                  type: string
+                  description: Name of the agent to trigger.
+                  example: CEO
+                input:
+                  description: Arbitrary payload forwarded to the agent.
+                  nullable: true
+      responses:
+        '202':
+          description: Agent execution queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agentId:
+                    type: string
+                  runId:
+                    type: string
+                    description: Identifier for retrieving run logs.
+                  status:
+                    type: string
+                    description: Current state of the run.
+        '400':
+          description: Missing required parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server-side failure to trigger the agent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/agents/{runId}:
+    get:
+      summary: Get an agent run snapshot
+      description: Returns current status, logs, and any result payload for a queued or completed run.
+      parameters:
+        - in: path
+          name: runId
+          required: true
+          schema:
+            type: string
+          description: Identifier returned from the trigger endpoint.
+      responses:
+        '200':
+          description: Run details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runId:
+                    type: string
+                  agentId:
+                    type: string
+                  status:
+                    type: string
+                    enum: [queued, running, completed, failed]
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                          format: date-time
+                        message:
+                          type: string
+                        payload:
+                          type: object
+                          nullable: true
+                  result:
+                    description: Raw result from the agent runner when available.
+                    type: object
+                    nullable: true
+        '404':
+          description: Run not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
