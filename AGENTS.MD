@@ -50,6 +50,7 @@ Use the index below to locate every scoped `AGENTS.md` file quickly.
 - **npm audit:** Resolve all outstanding `npm audit` findings before opening a pull request, including transitive vulnerabilities reported at the configured audit level.
 - **Search efficiently:** Use ripgrep (`rg`) with scoping flags (`--files-with-matches`, `--iglob`) instead of `grep -R` for faster lookups.
 - **Background jobs:** Confirm cron tasks log appropriately and respect configured backup directories.
+- **Testing placement:** Add new specs under the `test/` tree and co-locate them with the files they validate (for example, `feature.test.js` beside `feature.js`).
 
 ## Pull request expectations
 - Summarize changes clearly, flag new routes, env vars, migrations, or operational steps.
@@ -59,3 +60,7 @@ Use the index below to locate every scoped `AGENTS.md` file quickly.
 - Do not use emojis in repository documentation, templates, or contribution notes.
 - Following these guidelines will keep contributions aligned with the project’s architecture, tooling, and operational practices.
 - For expanded contribution standards, review [CONTRIBUTING.md](CONTRIBUTING.md) and follow the policies described there.
+
+## Agents.md stewardship
+- Every directory should contain an `agents.md` file that explains how to add or update tests for its contents and offers fast context for future edits.
+- When you add, rename, or delete files, update the nearest `agents.md` files so they stay accurate.
