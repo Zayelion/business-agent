@@ -10,6 +10,12 @@ export const agents = [
     description: 'Routes strategic decisions and synthesizes agent outputs.'
   },
   {
+    id: 'BoardOfDirectors',
+    title: 'Board of Directors',
+    role: 'Governance',
+    description: 'Sets direction for the CEO and enforces ethical, shareholder-focused oversight.'
+  },
+  {
     id: 'CFO',
     title: 'CFO',
     role: 'Financial Strategist',

@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import next from 'next';
 import createEnv from 'env';
-import { startHourlyJobs } from './cron/hourly/job.js';
-import { startDailyJobs } from './cron/daily/job.js';
+import { startHourlyJobs } from './interface/server/cron/hourly/job.js';
+import { startDailyJobs } from './interface/server/cron/daily/job.js';
 import agentsRouter from './interface/server/routes/agents.js';
 
 const __filename = fileURLToPath(import.meta.url);
