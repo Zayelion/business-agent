@@ -102,6 +102,27 @@ async function runAgentInBackground(runId) {
     run.result = result;
     run.status = 'completed';
     appendLog(runId, 'Agent run completed', { result });
+
+    if (typeof result?.handoff_to === 'string' && result.handoff_to.trim().length > 0) {
+      appendLog(runId, 'Agent requested handoff', { to: result.handoff_to });
+      const handoffInput = {
+        task: result?.handoff_task ?? `Follow up on ${run.agentId} findings.`,
+        from_agent: run.agentId,
+        expected_output: 'Respond to the previous agent findings and return the standard structured object.',
+        context: {
+          constraints: run.input?.context?.constraints ?? {},
+          history: [
+            {
+              agentId: run.agentId,
+              input: run.input,
+              result
+            }
+          ]
+        }
+      };
+
+      startAgentRun(result.handoff_to, handoffInput);
+    }
     return;
   } catch (error) {
     run.status = 'failed';
