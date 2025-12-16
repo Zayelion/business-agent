@@ -104,6 +104,15 @@ textarea {
   color: #e2e8f0;
 }
 
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0b1221;
+  color: #e2e8f0;
+}
+
 button.trigger {
   align-self: flex-start;
   padding: 12px 18px;
@@ -138,4 +147,71 @@ button.trigger:active {
 
 .status.error {
   border-color: #ef4444;
+}
+
+.todo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.todo-entry {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #1e293b;
+  background: #0b1221;
+  padding: 12px;
+  border-radius: 10px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: border 0.2s, transform 0.1s ease;
+}
+
+.todo-entry:hover {
+  border-color: #22d3ee;
+}
+
+.todo-entry.active {
+  border-color: #22d3ee;
+  transform: translateY(-1px);
+}
+
+.todo-title {
+  font-weight: 700;
+}
+
+.todo-meta {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.todo-preview {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.muted {
+  color: #94a3b8;
 }
