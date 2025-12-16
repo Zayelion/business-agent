@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { createAgentRunner as createLocalAgentRunner } from './agentRunnerStub.js';
+import { applyAgentFileEdit } from './agentFileService.js';
 
 const runs = new Map();
 
@@ -13,6 +14,48 @@ function resolveFactory() {
   }
 
   return null;
+}
+
+/**
+ * Normalizes an edit request into a consistent shape.
+ * @param {object|null} request Agent-provided file edit request.
+ * @returns {{fileName: string, content: string, mode?: 'replace'|'append'}|null} Standardized request or null when invalid.
+ */
+function normalizeFileEditRequest(request) {
+  if (!request || typeof request !== 'object') {
+    return null;
+  }
+
+  const candidates = [request.fileName, request.file, request.path];
+  const fileName = candidates.find((value) => typeof value === 'string' && value.trim().length > 0);
+  if (!fileName) {
+    return null;
+  }
+
+  if (typeof request.content !== 'string') {
+    return null;
+  }
+
+  const mode = request.mode ?? 'replace';
+  return { fileName, content: request.content, mode };
+}
+
+/**
+ * Extracts a requested file edit from an agent result payload when present.
+ * @param {object|null} result Agent execution result object.
+ * @returns {{fileName: string, content: string, mode?: 'replace'|'append'}|null} Parsed edit request.
+ */
+function getFileEditRequest(result) {
+  if (!result) {
+    return null;
+  }
+
+  const directRequest = normalizeFileEditRequest(result.agent_file_edit ?? result.requested_file_edit ?? null);
+  if (directRequest) {
+    return directRequest;
+  }
+
+  return normalizeFileEditRequest(result.artifacts?.agent_file_edit ?? null);
 }
 
 /**
@@ -98,6 +141,17 @@ async function runAgentInBackground(runId) {
     run.result = result;
     run.status = 'completed';
     appendLog(runId, 'Agent run completed', { result });
+
+    const requestedEdit = getFileEditRequest(result);
+    if (requestedEdit) {
+      appendLog(runId, 'Agent requested file edit', { fileName: requestedEdit.fileName, mode: requestedEdit.mode });
+      try {
+        const outcome = await applyAgentFileEdit(requestedEdit);
+        appendLog(runId, 'Agent file edit applied', { path: outcome.path, mode: outcome.mode });
+      } catch (error) {
+        appendLog(runId, 'Agent file edit failed', { error: error.message });
+      }
+    }
 
     if (typeof result?.handoff_to === 'string' && result.handoff_to.trim().length > 0) {
       appendLog(runId, 'Agent requested handoff', { to: result.handoff_to });

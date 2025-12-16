@@ -8,17 +8,25 @@ export function createAgentRunner() {
    * @param {{agentId: string, input: unknown}} params Agent execution parameters.
    * @returns {Promise<object>} Structured result from the simulated agent.
    */
-  const run = async ({ agentId, input }) => ({
-    status: 'completed',
-    agentId,
-    input,
-    summary: `Stub run completed for ${agentId}.`,
-    analysis: 'This is a placeholder response from the local stub agent runner.',
-    recommendations: [],
-    artifacts: {},
-    risk_flags: [],
-    handoff_to: null
-  });
+  const run = async ({ agentId, input }) => {
+    const requestedFileEdit = input?.requested_file_edit ?? null;
+    const artifacts = {};
+    if (requestedFileEdit) {
+      artifacts.agent_file_edit = requestedFileEdit;
+    }
+
+    return {
+      status: 'completed',
+      agentId,
+      input,
+      summary: `Stub run completed for ${agentId}.`,
+      analysis: 'This is a placeholder response from the local stub agent runner.',
+      recommendations: [],
+      artifacts,
+      risk_flags: [],
+      handoff_to: null
+    };
+  };
 
   return { run };
 }
