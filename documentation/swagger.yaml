@@ -118,3 +118,131 @@ paths:
                 properties:
                   error:
                     type: string
+  /api/todos:
+    post:
+      summary: Create a todo entry
+      description: Writes the todo body to disk and records metadata in a SQLite database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - body
+              properties:
+                title:
+                  type: string
+                  description: Title for the todo entry.
+                body:
+                  type: string
+                  description: Detailed content saved to the task file.
+      responses:
+        '201':
+          description: Todo persisted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failure saving the todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    get:
+      summary: List todos
+      description: Returns saved todo metadata without loading the file contents.
+      responses:
+        '200':
+          description: Todo list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+        '500':
+          description: Failure loading todos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/todos/{todoId}:
+    get:
+      summary: Load todo from file
+      description: Retrieves todo metadata and the stored file contents using the SQLite index.
+      parameters:
+        - in: path
+          name: todoId
+          required: true
+          schema:
+            type: integer
+          description: Identifier returned by the create endpoint.
+      responses:
+        '200':
+          description: Todo content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  body:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failure loading todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string

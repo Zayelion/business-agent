@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import * as Agents from 'agents';
+import { createAgentRunner as createLocalAgentRunner } from './agentRunnerStub.js';
 
 const runs = new Map();
 
@@ -8,12 +8,8 @@ const runs = new Map();
  * @returns {Function|null} The factory function if available or null when missing.
  */
 function resolveFactory() {
-  if (typeof Agents.createAgentRunner === 'function') {
-    return Agents.createAgentRunner;
-  }
-
-  if (typeof Agents.default === 'object' && typeof Agents.default.createAgentRunner === 'function') {
-    return Agents.default.createAgentRunner;
+  if (typeof createLocalAgentRunner === 'function') {
+    return createLocalAgentRunner;
   }
 
   return null;
