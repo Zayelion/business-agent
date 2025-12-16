@@ -6,6 +6,7 @@ import createEnv from 'env';
 import { startHourlyJobs } from './interface/server/cron/hourly/job.js';
 import { startDailyJobs } from './interface/server/cron/daily/job.js';
 import agentsRouter from './interface/server/routes/agents.js';
+import todosRouter from './interface/server/routes/todos.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ async function startServer() {
 
   server.use(express.json());
   server.use('/api', agentsRouter);
+  server.use('/api/todos', todosRouter);
 
   server.all('*', (req, res) => {
     handle(req, res);
